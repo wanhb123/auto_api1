@@ -1,0 +1,70 @@
+{% extends 'add/base.html' %}
+{% block mycss %}
+    <style type="text/css">
+        .form-control {
+            height: 46px;
+        }
+    </style>
+{% endblock %}
+{% block center %}
+    <div class="row">
+        <nav class="navbar navbar-default" style="margin-left: 2px; margin-top: 50px;">
+            <div class="container-fluid" style="margin-left: auto;">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <h2 style="margin-top: 14px;">项目信息</h2>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <form class="navbar-form navbar-right" action="{{ url_for('project.searchProject') }}"
+                          method="post">
+                        <div class="form-group" style="margin-top: 2px;">
+                            <input type="text" name="search" class="form-control" placeholder="Search"
+                                   style="height: 40px;">
+                        </div>
+                        <button type="submit" class="btn btn-lg btn-info"
+                                style="height: 40px; margin-top: 2px;padding-top: 8px;" id="search">搜索
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="row">
+        <div class="bs-example" data-example-id="simple-table">
+            <table class="table">
+                <thead>
+                <tr class="active">
+                    <th>序号</th>
+                    <th>项目名称</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                {% for project in projects %}
+                    <input type="hidden" id="projectid" value="{{ project.id }}">
+                    <tbody>
+                    <tr>
+                        <th>{{ loop.index }}</th>
+                        <td>{{ project.project_name }}</td>
+                        <td>{{ project.create_time }}</td>
+                        <td><a href="{{ url_for('project.editProject') }}?id={{ project.id }}"
+                               class="btn btn-info btn-sm">编辑</a>
+                            <a href="{{ url_for('project.deleteProject', id=project.id) }}"
+                               class="btn btn-danger btn-sm">删除</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+            <div style="color: #8c8c8c; font-size: 16px; text-align: center">{{ msg }}</div>
+        </div>
+    </div>
+    <script>
+        $('#deleteBtn').click(function () {
+            let id = $("input#projectid").val();
+            alert(id)
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自动化测试平台</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='imgs/site.ico') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <style>
+        .modal.fade.in {
+            top: 150px;
+        }
+    </style>
+    {% block mycss %}
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">自动化测试平台 <span class="badge">v1.0</span></a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">你好，万海波 <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/login" class="text-right">退出</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#" class="text-right">修改密码</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2" style="margin-left: 23px;">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingFour">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                <span class="glyphicon glyphicon-cog"> 系统管理 <span
+                                        class="glyphicon glyphicon-chevron-right"></span></span>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel"
+                         aria-labelledby="headingFour">
+                        <div class="panel-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">系统信息</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingFive">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                <span class="glyphicon glyphicon-user">  用户管理  <span
+                                        class="glyphicon glyphicon-chevron-right"></span></span>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel"
+                         aria-labelledby="headingFive">
+                        <div class="panel-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a
+                                        href="{{ url_for('user.getUsersInfo') }}">用户信息</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                               aria-expanded="true" aria-controls="collapseOne">
+                                <span class="glyphicon glyphicon-file">  项目管理  <span
+                                        class="glyphicon glyphicon-chevron-right"></span></span>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{url_for('project.getProjectDetail')}}">项目信息</a>
+                                </li>
+                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" data-toggle="modal"
+                                                                                       data-target="#myModal">新增项目</a>
+                                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+                                         aria-labelledby="myModalLabel"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                            aria-hidden="true">
+                                                        &times;
+                                                    </button>
+                                                    <h3 class="modal-title" style="text-align: center"><b>新增项目</b></h3>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <label for="projectname" class="control-label"><h4>
+                                                                项目名称：</h4></label>
+                                                            <input type="text" class="form-control"
+                                                                   name="projectname"
+                                                                   placeholder="请输入项目名称">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-info" data-dismiss="modal">取消
+                                                    </button>
+                                                    <button type="submit" class="btn btn-success" id="projectname_btn">
+                                                        确定
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingTwo">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                <span class="glyphicon glyphicon-link">  接口管理   <span
+                                        class="glyphicon glyphicon-chevron-right"></span></span>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="panel-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a
+                                        href="{{ url_for('interface.getInterfaceDetail') }}">接口信息</a>
+                                </li>
+                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a
+                                        href="{{ url_for('interface.add_Interface') }}">新增接口</a>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingThree">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                <span class="glyphicon glyphicon-book">  用例管理  <span
+                                        class="glyphicon glyphicon-chevron-right"></span></span>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
+                         aria-labelledby="headingThree">
+                        <div class="panel-body">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            {% block center %}
+                <div class="row col-sm-2 pull-right">
+                    <iframe width="280" scrolling="no" height="25" frameborder="0" allowtransparency="true"
+                            src="https://i.tianqi.com?c=code&id=34&icon=1&num=5&site=12"></iframe>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% block myjs %}
+    <script>
+        $('#projectname_btn').click(function () {
+            var projectname = $("input[name='projectname']").val()
+            $.ajax({
+                url: '{{ url_for('project.getProjectDetail') }}',
+                data: {projectname: projectname},
+                type: 'POST',
+                success: function (result) {
+                    location.href = '{{ url_for('project.getProjectDetail') }}'
+                },
+                error: function (msg) {
+                    alert('项目已存在')
+                }
+            })
+            return false;
+        });
+    </script>
+{% endblock %}
+</body>
+</html>

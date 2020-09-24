@@ -1,0 +1,79 @@
+{% extends 'add/base.html' %}
+{% block mycss %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/interface/interface.css') }}">
+{% endblock %}
+{% block center %}
+    <div class="row col-sm-12">
+        <nav class="navbar navbar-default" style="margin-left: 2px; margin-top: 50px;">
+            <div class="container-fluid" style="margin-left: auto;">
+                <div class="navbar-header">
+                    <h2 style="margin-top: 14px;">接口信息</h2>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <form class="navbar-form navbar-right" action="{{ url_for('interface.searchInterface') }}" method="post">
+                        <div class="form-group" style="margin-top: 2px;">
+                            <input type="text" name="search" class="form-control" placeholder="Search" style="height: 40px;">
+                        </div>
+                        <button type="submit" class="btn btn-lg btn-info"
+                                style="height: 40px; margin-top: 2px;padding-top: 8px;" id="search">搜索
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="row col-sm-12">
+    <div class="tab-content" style="margin-top: -8px;">
+        <div role="tabpanel" class="tab-pane active" id="home">
+            <div class="bs-example" data-example-id="hoverable-table">
+                <table class="table table-hover">
+                    <thead>
+                    <tr class="active">
+                        <th><input type="checkbox"></th>
+                        <th>序号</th>
+                        <th>所属项目</th>
+                        <th>接口地址</th>
+                        <th>接口名称</th>
+                        <th>请求方式</th>
+                        <th>请求参数</th>
+                        <th>创建时间</th>
+                        <th>创建人员</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for interface in interfaces %}
+                            <tr>
+                            <th><input type="checkbox" name="id" value="{{ interface.id }}"></th>
+                            <th>{{ loop.index }}</th>
+                            <th>{{ interface.project.project_name }}</th>
+                            <th>{{ interface.inf_url }}</th>
+                            <th>{{ interface.inf_name }}</th>
+                            <th>{{ interface.req_method }}</th>
+                            <th id="parameters" class="col-sm-4">{{ interface.req_parameters }}</th>
+                            <th>{{ interface.create_time }}</th>
+                            <th>{{ interface.create_person }}</th>
+                            <td><a class='btn btn-sm btn-info'
+                                   href='{{ url_for("interface.editInterface", id=interface.id) }}'>修改</a>
+                                <a class='btn btn-sm btn-danger'
+                                   href='{{ url_for("interface.deleteInterface",id=interface.id) }}'
+                                   onclick="del()">删除</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+             <div style="color: #8c8c8c; font-size: 16px; text-align: center">{{ msg }}</div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        function del() {
+            if (!confirm("确认要删除？")) {
+                window.event.returnValue = false;
+            }
+        }
+    </script>
+    </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'add/base.html' %}
+{% block center %}
+    <div class="col-sm-12">
+        <div class="row">
+            <h1 style="margin-top:60px; margin-bottom: 45px;">编辑项目</h1>
+        </div>
+        <div class="row">
+            <div class="bs-example" data-example-id="simple-table">
+                <form action="{{ url_for('project.editProject') }}" method="post">
+                <table class="table">
+                    <thead>
+                    <tr class="active">
+                        <th>项目名称</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <input type="hidden" name="id" value="{{ project.id }}">
+                        <td><input type="text" class="input-sm" name="projectname" value="{{ project.project_name }}">
+                        </td>
+                        <td>{{ project.create_time }}</td>
+                        <td><input type="button" class="btn btn-sm btn-success" value="取消" onclick="javascript:window.history.back(-1);">
+                        <input type="submit" class="btn btn-sm btn-success" value="确定"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

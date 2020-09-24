@@ -1,0 +1,18 @@
+{% extends 'add/base.html' %}
+{% block center %}
+    <div class="col-sm-12">
+        <div class="row">
+            <h1 style="margin-top:60px;">编辑项目信息</h1>
+        </div>
+        <div class="row" style="margin-top: 40px;">
+            <lable>项目名称：</lable>
+            <input class="input-sm" type="text" name="projectname" value="{{ project }}" placeholder="{{ project.projectname }}">
+        </div>
+    </div>
+    <script>
+        {#$('#editProject').click(function () {#}
+        {#    location.href =#}
+        {#    {{ url_for('editProject') }}#}
+        {#})#}
+    </script>
+{% endblock %}

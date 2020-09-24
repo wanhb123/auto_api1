@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+<meta charset="utf-8">
+<title>自动化测试平台</title>
+<link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <div class="content">
+        <div class="form sign-in">
+            <h2>欢迎回来</h2>
+            <label>
+                <span>邮箱</span>
+                <input type="email" name="email"/>
+            </label>
+            <label>
+                <span>密码</span>
+                <input type="password" name="password"/>
+            </label>
+            <button type="button" class="submit" value="登录">登 录</button>
+        </div>
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                    <h2>还未注册？</h2>
+                    <p>立即注册，有意外惊喜！</p>
+                </div>
+                <div class="img__text m--in">
+                    <h2>已有帐号？</h2>
+                    <p>有帐号就登录吧！</p>
+                </div>
+                <div class="img__btn">
+                    <span class="m--up">注 册</span>
+                    <span class="m--in">登 录</span>
+                </div>
+            </div>
+                <div class="form sign-up">
+                    <h2>立即注册</h2>
+                    <label>
+                        <span>用户名</span>
+                        <input type="text" name="username" >
+                    </label>
+                    <label>
+                        <span>邮箱</span>
+                        <input type="text" name="email" />
+                    </label>
+                    <label>
+                        <span>密码</span>
+                        <input type="password" name="password" />
+                    </label>
+                    <button type="button" class="submit" value="注册"><a href="{{ url_for('index') }}">注 册</a></button>
+                </div>
+        </div>
+    </div>
+    <script src="../static/jquery.min.js"></script>
+    <script src="../static/js/script.js"></script>
+	<div style="text-align:center;">
+</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% extends 'add/base.html' %}
+{% block center %}
+    <div class="row col-sm-12">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <h2 style="margin-top: 10px; margin-bottom: 30px;"><span style="padding-top: -15px;">项目信息</span></h2>
+                </div>
+            </div>
+        </nav>
+            <form action="{{ url_for('interface.add_Interface') }}" method="post">
+                <div class="form-group">
+                    <label for="project">所属项目：</label>
+                    <select name="projectid" class="form-control">
+                        <option value="0">请选择所属项目</option>
+                        {% for project in projects %}
+                            <option value="{{ project.id }}">{{ project.project_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="url">接口地址：</label>
+                    <input type="text" class="form-control" id="url" name="url"
+                           placeholder="输入接口地址">
+                </div>
+                <div class="form-group">
+                    <label for="interfacename">接口名称：</label>
+                    <input type="text" class="form-control" id="interfacename"
+                           name="interfacename"
+                           placeholder="输入接口名称">
+                </div>
+                <div class="form-group">
+                    <label for="reqmethod">请求方式：</label>
+                    <select class="form-control" name="reqmethod">
+                        <option value="0">请选择请求方式</option>
+                        <option value="get">GET</option>
+                        <option value="post">POST</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reqparameter">请求参数：</label>
+                    <input type="text" class="form-control" id="reqparameter"
+                           name="parameter"
+                           placeholder="输入请求参数">
+                </div>
+                <button type="submit" class="btn btn-primary" id="add_user_btn">添加
+                </button>
+            </form>
+{% endblock %}

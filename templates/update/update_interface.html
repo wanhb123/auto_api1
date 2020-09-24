@@ -1,0 +1,51 @@
+{% extends 'add/base.html' %}
+{% block center %}
+    <div class="col-sm-12" xmlns:about="http://www.w3.org/1999/xhtml">
+        <div>
+            <h1 style="margin-top:60px; margin-bottom: 45px;">编辑接口信息</h1>
+        </div>
+        <div class="row">
+            <div class="bs-example" data-example-id="simple-table">
+                <form action="{{ url_for('interface.editInterface') }}" method="post">
+                    <table class="table">
+                        <thead>
+                        <tr class="active">
+                            <th>接口名称</th>
+                            <th>接口地址</th>
+                            <th>请求方式</th>
+                            <th>请求参数</th>
+                            <th>所属项目</th>
+                            <th>创建时间</th>
+                            <th>创建人员</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <input type="hidden" name="id" value="{{ interface.id }}">
+                            <td><input type="text" class="input-sm" name="interface_name"
+                                       value="{{ interface.inf_name }}">
+                            </td>
+                            <td><input type="text" class="input-sm" name="url" value="{{ interface.inf_url }}"></td>
+                            <td><input type="text" class="input-sm" name="req_method"
+                                       value="{{ interface.req_method }}"></td>
+                            <td><input type="text" class="input-sm" name="req_parameters"
+                                       value="{{ interface.req_parameters }}"></td>
+                            <td>{{ interface.project.project_name }}</td>
+                            <td>{{ interface.create_time }}</td>
+                            <td>{{ interface.create_person }}</td>
+                            <td><input type="button" value="取消"
+                                       class="btn btn-default btn-sm" onclick="javascript:window.history.back(-1);">
+                                <input type="submit" value="确定"
+                                       class="btn btn-info btn-sm"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div style="color: red; font-size: 16px;">
+                    <div style="text-align: center" class="col-sm-3 col-sm-offset-4"><strong>{{ msg }}</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
