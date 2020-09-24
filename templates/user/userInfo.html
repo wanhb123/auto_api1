@@ -2,129 +2,150 @@
 {% block mycss %}
     <style>
         .form-control {
-            height: 46px;
+            height: 34px;
+            margin-top: 10px;
         }
+    .btn-success{
+        margin-top: 10px;
+        margin-right: 15px;
+        height: 33px;
+    }
+    .input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+        margin-top: 9px;
+        margin-left: -20px;
+    }
+    .input-group-btn{
+         opacity:0.6;
+    }
     </style>
 {% endblock %}
 {% block center %}
     <div class="row">
-        <nav class="navbar navbar-default" style="margin-left: 2px; margin-top: 50px;">
+        <nav class="navbar navbar-default" style="margin-left: 2px; margin-top: 50px;height: 68px;">
             <div class="container-fluid" style="margin-left: auto;">
                 <div class="navbar-header">
-                    <h2 style="margin-top: 14px;">用户信息</h2>
+                    <h2 style="margin-top: 15px">用户信息</h2>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <form class="navbar-form navbar-right" action="{{ url_for('user.searchUserInfo') }}" method="post">
-                        <div class="form-group" style="margin-top: 2px;">
-                            <input type="text" name="search" class="form-control" placeholder="Search" style="height: 40px;">
+                        <a href="{{ url_for('user.add_user') }}" class="btn btn-success">新增</a>
+                        <div class="form-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search">
+                            <span class="input-group-btn pull-right">
+                                <button class="btn btn-default glyphicon glyphicon-search" id="search"></button>
+                            </span>
                         </div>
-                        <button type="submit" class="btn btn-lg btn-info"
-                                style="height: 40px; margin-top: 2px;padding-top: 8px;" id="search">搜索
-                        </button>
                     </form>
                 </div>
             </div>
         </nav>
     </div>
     <div class="row">
-        <div class="panel-body" style="margin-left: -14px; margin-top: -20px;">
-            <div>
-                <ul class="nav nav-tabs navbar-btn" role="tablist" style="margin-bottom: 0px;">
-                    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab"
-                                                              data-toggle="tab">用户列表</a></li>
-                    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab"
-                                               data-toggle="tab">添加用户</a></li>
-                </ul>
-
-                <!-- 人员信息表格 -->
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="home">
-                        <div class="bs-example" data-example-id="hoverable-table">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr class="active">
-                                    <th>序号</th>
-                                    <th>姓名</th>
-                                    <th>密码</th>
-                                    <th>手机号</th>
-                                    <th>操作</th>
+        <div style="margin-top: 1px;">
+            <!-- 人员信息表格 -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="home">
+                    <div class="bs-example" data-example-id="hoverable-table">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr class="active">
+                                <th>序号</th>
+                                <th>姓名</th>
+                                <th>密码</th>
+                                <th>手机号</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            {% for user in pagination.items %}
+                                <tbody>
+                                <tr>
+                                    <th scope="row">{{ loop.index }}</th>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.password }}</td>
+                                    <td>{{ user.phone }}</td>
+                                    <td>
+                                        <a href="{{ url_for('user.editUser') }}?id={{ user.id }}"
+                                           class="btn btn-sm btn-info">编辑</a>
+                                        <a href="#" class="btn btn-danger btn-sm" id="delmodal">删除</a>
+                                    </td>
                                 </tr>
-                                </thead>
-                                {% for user in pagination.items %}
-                                    <tbody>
-                                    <tr>
-                                        <th scope="row">{{ loop.index }}</th>
-                                        <td>{{ user.username }}</td>
-                                        <td>{{ user.password }}</td>
-                                        <td>{{ user.phone }}</td>
-                                        <td>
-                                            <a href="{{ url_for('user.editUser') }}?id={{ user.id }}" class="btn btn-sm btn-primary">编辑</a>
-                                            <a href="#" class="btn btn-danger btn-sm" id="delmodal">删除</a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                {% endfor %}
-                            </table>
-                            <div style="color: #8c8c8c; font-size: 16px; text-align: center">{{ msg }}</div>
-                            <nav aria-label="Page navigation" id="pagination" class="col-sm-offset-5">
-                                <ul class="pagination">
-                                    <li>
+                                </tbody>
+                            {% endfor %}
+                        </table>
+                        <div style="color: #8c8c8c; font-size: 16px; text-align: center">{{ msg }}</div>
+                        <nav aria-label="Page navigation" id="pagination" class="col-sm-offset-5">
+                            <ul class="pagination">
+                                <li>
                                     {% if pagination.has_prev %}
-                                        <a href="{{ url_for('user.getUsersInfo') }}?page={{ pagination.prev_num }}" aria-label="Previous">
+                                        <a href="{{ url_for('user.getUsersInfo') }}?page={{ pagination.prev_num }}"
+                                           aria-label="Previous">
                                             <span aria-hidden="true">上一页</span>
                                         </a>
                                     {% else %}
                                         <span aria-hidden="true" class=" btn disabled">上一页</span>
                                     {% endif %}
-                                    </li>
+                                </li>
                                 {% for page_num in range(1, pagination.pages + 1) %}
-                                    <li {% if pagination.page == page_num %} class="active" {% endif %}><a href="{{ url_for('user.getUsersInfo') }}?page={{ page_num }}">{{ page_num }}</a></li>
+                                    <li {% if pagination.page == page_num %} class="active" {% endif %}><a
+                                            href="{{ url_for('user.getUsersInfo') }}?page={{ page_num }}">{{ page_num }}</a>
+                                    </li>
                                 {% endfor %}
-                                    <li>
-                                        {% if pagination.has_next %}
-                                        <a href="{{ url_for('user.getUsersInfo') }}?page={{ pagination.next_num }}" aria-label="Next">
+                                <li>
+                                    {% if pagination.has_next %}
+                                        <a href="{{ url_for('user.getUsersInfo') }}?page={{ pagination.next_num }}"
+                                           aria-label="Next">
                                             <span aria-hidden="true">下一页</span>
                                         </a>
-                                        {% else %}
-                                            <span aria-hidden="true" class="btn disabled">下一页</span>
-                                        {% endif %}
-                                    </li>
-                                </ul>
-                            </nav>
+                                    {% else %}
+                                        <span aria-hidden="true" class="btn disabled">下一页</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="profile">
+                    <form action="{{ url_for('user.add_user') }}" method="post">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">用户名：</label>
+                            <input type="text" class="form-control" id="exampleInputusername" name="username"
+                                   placeholder="username">
                         </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane fade" id="profile">
-                        <form action="{{ url_for('user.add_user') }}" method="post">
-                            <div class="form-group">
-                                <label for="exampleInputEmail1">用户名：</label>
-                                <input type="text" class="form-control" id="exampleInputusername" name="username"
-                                       placeholder="username">
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleInputPassword1">密码：</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" name="password"
-                                       placeholder="password">
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleInputPassword1">手机号：</label>
-                                <input type="password" class="form-control" id="exampleInputPhoneNum" name="phone"
-                                       placeholder="phone">
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleInputPassword1">身份证号：</label>
-                                <input type="password" class="form-control" id="exampleInputIdCard" name="idcard"
-                                       placeholder="idcard">
-                            </div>
-                            <button type="submit" class="btn btn-primary" id="add_user_btn">添加用户</button>
-                        </form>
-                    </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">密码：</label>
+                            <input type="password" class="form-control" id="exampleInputPassword1" name="password"
+                                   placeholder="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">手机号：</label>
+                            <input type="password" class="form-control" id="exampleInputPhoneNum" name="phone"
+                                   placeholder="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">身份证号：</label>
+                            <input type="password" class="form-control" id="exampleInputIdCard" name="idcard"
+                                   placeholder="idcard">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="add_user_btn">添加用户</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
     {% block myjs %}
         <script>
+            $('#search').click(function () {
+                let content = $("input[name='search']").val();
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('user.searchUserInfo') }}',
+                    dataType: 'json',
+                    data: {search: content},
+                    success: function (data) {
 
+                    }
+                })
+            })
         </script>
     {% endblock %}
 {% endblock %}

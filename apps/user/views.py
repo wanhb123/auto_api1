@@ -49,13 +49,17 @@ def add_user():
         phone = request.form.get('phone')
         idCard = request.form.get('idcard')
         if username and password:
-            user = User(username=username, password=password, phone=phone)
-            db.session.add(user)
-            db.session.commit()
+            try:
+                user = User(username=username, password=password, phone=phone)
+                db.session.add(user)
+                db.session.commit()
+                return redirect(url_for('user.getUsersInfo'))
+            except Exception as e:
+                print('发生{}异常'.format(e))
         else:
-            data = {'msg': '信息不能为空'}
-            return jsonify(data)
-    return redirect('/getUserInfo')
+            return render_template('add/addUser.html', msg='信息不能为空')
+    else:
+        return render_template('add/addUser.html')
 
 
 @user.route('/searchUserInfo', methods=['GET', 'POST'])
@@ -68,7 +72,7 @@ def searchUserInfo():
     if keyword:
         pagination = User.query.filter(User.username.contains(keyword)).paginate(page=page, per_page=5)
         print(type(pagination))
-        if pagination == 0:
+        if pagination.items == 0:
             return render_template('user/userInfo.html', msg='暂无数据')
         else:
             return render_template('user/userInfo.html', pagination=pagination)

@@ -11,6 +11,7 @@
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <form class="navbar-form navbar-right" action="{{ url_for('interface.searchInterface') }}" method="post">
+                        <a href="{{ url_for() }}"></a>
                         <div class="form-group" style="margin-top: 2px;">
                             <input type="text" name="search" class="form-control" placeholder="Search" style="height: 40px;">
                         </div>
