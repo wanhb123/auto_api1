@@ -1,6 +1,6 @@
 import json
 import requests
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from sqlalchemy import and_
 from sqlalchemy.orm import session
 from apps.interface.models import Interface
@@ -37,7 +37,7 @@ def login():
 @user.route('/getUserInfo')
 def getUsersInfo():
     page = request.args.get('page', 1, type=int)
-    pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=5)
+    pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=4)
     return render_template('user/userInfo.html', pagination=pagination)
 
 
@@ -47,7 +47,6 @@ def add_user():
         username = request.form.get('username')
         password = request.form.get('password')
         phone = request.form.get('phone')
-        idCard = request.form.get('idcard')
         if username and password:
             try:
                 user = User(username=username, password=password, phone=phone)
@@ -64,20 +63,17 @@ def add_user():
 
 @user.route('/searchUserInfo', methods=['GET', 'POST'])
 def searchUserInfo():
-    # keyword = request.args.get('search')
-    # users_list = User.query.filter(User.username.contains(keyword)).all()
-    # return render_template('add/add_person.html', users=users_list)
-    keyword = request.form.get('search')
-    page = request.args.get('page')
+    data = json.loads(request.form.get('data'))
+    keyword = data['search']
+    page = int(data['page'])
     if keyword:
-        pagination = User.query.filter(User.username.contains(keyword)).paginate(page=page, per_page=5)
-        print(type(pagination))
-        if pagination.items == 0:
+        pagination = User.query.filter(User.username.contains(keyword)).order_by(User.createtime.desc()).paginate(page=page, per_page=4, error_out=False)
+        if len(pagination.items) == 0:
             return render_template('user/userInfo.html', msg='暂无数据')
         else:
             return render_template('user/userInfo.html', pagination=pagination)
     else:
-        pagination = User.query.paginate(page=page, per_page=6)
+        pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=4)
         return render_template('user/userInfo.html', pagination=pagination)
 
 

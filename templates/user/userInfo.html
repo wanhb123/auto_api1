@@ -5,17 +5,23 @@
             height: 34px;
             margin-top: 10px;
         }
-    .btn-success{
+    .btn-success {
         margin-top: 10px;
         margin-right: 15px;
         height: 33px;
     }
-    .input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+    .input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group {
         margin-top: 9px;
         margin-left: -20px;
     }
-    .input-group-btn{
+    .input-group-btn {
          opacity:0.6;
+    }
+    .pagination>li>a {
+        margin-right: 10px;
+    }
+    .page {
+         border-radius: 20% 20% 20% 20%/20% 20% 20% 20%;
     }
     </style>
 {% endblock %}
@@ -27,7 +33,7 @@
                     <h2 style="margin-top: 15px">用户信息</h2>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <form class="navbar-form navbar-right" action="{{ url_for('user.searchUserInfo') }}" method="post">
+                    <div class="navbar-form navbar-right">
                         <a href="{{ url_for('user.add_user') }}" class="btn btn-success">新增</a>
                         <div class="form-group">
                             <input type="text" name="search" class="form-control" placeholder="Search">
@@ -35,7 +41,7 @@
                                 <button class="btn btn-default glyphicon glyphicon-search" id="search"></button>
                             </span>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -82,12 +88,12 @@
                                             <span aria-hidden="true">上一页</span>
                                         </a>
                                     {% else %}
-                                        <span aria-hidden="true" class=" btn disabled">上一页</span>
+                                        <span aria-hidden="true" class=" btn disabled" style="margin-right: 10px;">上一页</span>
                                     {% endif %}
                                 </li>
                                 {% for page_num in range(1, pagination.pages + 1) %}
                                     <li {% if pagination.page == page_num %} class="active" {% endif %}><a
-                                            href="{{ url_for('user.getUsersInfo') }}?page={{ page_num }}">{{ page_num }}</a>
+                                            href="{{ url_for('user.getUsersInfo') }}?page={{ page_num }}" class="page"><span id="page_num">{{ page_num }}</span></a>
                                     </li>
                                 {% endfor %}
                                 <li>
@@ -136,11 +142,19 @@
         <script>
             $('#search').click(function () {
                 let content = $("input[name='search']").val();
+                let page = $('#page_num').text()
+                let data = {
+                    data: JSON.stringify({
+                        'search': content,
+                        'page':page
+                    })
+                }
+                console.log(data)
                 $.ajax({
                     type: 'POST',
                     url: '{{ url_for('user.searchUserInfo') }}',
                     dataType: 'json',
-                    data: {search: content},
+                    data: data,
                     success: function (data) {
 
                     }
