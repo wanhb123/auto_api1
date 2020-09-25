@@ -110,54 +110,29 @@
                         </nav>
                     </div>
                 </div>
-                <div role="tabpanel" class="tab-pane fade" id="profile">
-                    <form action="{{ url_for('user.add_user') }}" method="post">
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">用户名：</label>
-                            <input type="text" class="form-control" id="exampleInputusername" name="username"
-                                   placeholder="username">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputPassword1">密码：</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1" name="password"
-                                   placeholder="password">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputPassword1">手机号：</label>
-                            <input type="password" class="form-control" id="exampleInputPhoneNum" name="phone"
-                                   placeholder="phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputPassword1">身份证号：</label>
-                            <input type="password" class="form-control" id="exampleInputIdCard" name="idcard"
-                                   placeholder="idcard">
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="add_user_btn">添加用户</button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
     {% block myjs %}
         <script>
             $('#search').click(function () {
-                let content = $("input[name='search']").val();
-                let page = $('#page_num').text()
-                let data = {
-                    data: JSON.stringify({
-                        'search': content,
-                        'page':page
-                    })
-                }
-                console.log(data)
+                $('search').unbind('click').click(function () {
+                    let content = $("input[name='search']").val();
+                    let page = $('#page_num').text()
+                    let data = {
+                        data: JSON.stringify({
+                            'search': content,
+                            'page':page
+                        })
+                    }
                 $.ajax({
                     type: 'POST',
                     url: '{{ url_for('user.searchUserInfo') }}',
                     dataType: 'json',
                     data: data,
                     success: function (data) {
-
                     }
+                })
                 })
             })
         </script>

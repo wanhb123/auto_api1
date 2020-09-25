@@ -37,7 +37,7 @@ def login():
 @user.route('/getUserInfo')
 def getUsersInfo():
     page = request.args.get('page', 1, type=int)
-    pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=4)
+    pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=6)
     return render_template('user/userInfo.html', pagination=pagination)
 
 
@@ -67,14 +67,15 @@ def searchUserInfo():
     keyword = data['search']
     page = int(data['page'])
     if keyword:
-        pagination = User.query.filter(User.username.contains(keyword)).order_by(User.createtime.desc()).paginate(page=page, per_page=4, error_out=False)
-        if len(pagination.items) == 0:
+        users = User.query.filter(User.username.contains(keyword)).order_by(User.createtime.desc()).all()
+        pagination = User.query.order_by(User.createtime.desc()).paginate(page, per_page=6)
+        if len(users) == 0:
             return render_template('user/userInfo.html', msg='暂无数据')
         else:
-            return render_template('user/userInfo.html', pagination=pagination)
+            return render_template('user/userInfo.html', users=users, pagination=pagination)
     else:
-        pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=4)
-        return render_template('user/userInfo.html', pagination=pagination)
+        users = User.query.order_by(User.createtime.desc()).all()
+        return redirect(url_for('user.getUsersInfo'))
 
 
 @user.route('/editUser', methods=['GET', 'POST'])
