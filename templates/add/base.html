@@ -11,6 +11,10 @@
         .modal.fade.in {
             top: 150px;
         }
+
+        .navbar {
+           border-radius: 0;
+        }
     </style>
     {% block mycss %}
     {% endblock %}
@@ -94,7 +98,8 @@
                     <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                         <div class="panel-body">
                             <ul class="list-group">
-                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{url_for('project.getProjectDetail')}}">项目信息</a>
+                                <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a
+                                        href="{{ url_for('project.getProjectDetail') }}">项目信息</a>
                                 </li>
                                 <li class="list-group-item">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" data-toggle="modal"
                                                                                        data-target="#myModal">新增项目</a>

@@ -4,7 +4,7 @@ from apps.interface.models import Interface
 from apps.project.models import Project
 from ext import db
 
-interface = Blueprint('interface', __name__, url_prefix='/app/interface')
+interface = Blueprint('interface', __name__, url_prefix='/interface')
 
 
 @interface.route('/getInterfaceDetail')

@@ -8,7 +8,7 @@ from apps.project.models import Project
 from apps.user.models import User
 from ext import db
 
-user = Blueprint('user', __name__, url_prefix='/app/user')
+user = Blueprint('user', __name__, url_prefix='/user')
 
 
 @user.route('/index')
@@ -37,8 +37,9 @@ def login():
 @user.route('/getUserInfo')
 def getUsersInfo():
     page = request.args.get('page', 1, type=int)
-    pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=6)
-    return render_template('user/userInfo.html', pagination=pagination)
+    pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=2)
+    users = pagination.items
+    return render_template('user/userInfo.html', pagination=pagination, users=users)
 
 
 @user.route('/addUser', methods=['POST', 'GET'])
@@ -49,10 +50,14 @@ def add_user():
         phone = request.form.get('phone')
         if username and password:
             try:
-                user = User(username=username, password=password, phone=phone)
-                db.session.add(user)
-                db.session.commit()
-                return redirect(url_for('user.getUsersInfo'))
+                phone = User.query.filter(User.phone == phone).first()
+                if not phone:
+                    user = User(username=username, password=password, phone=phone)
+                    db.session.add(user)
+                    db.session.commit()
+                    return redirect(url_for('user.getUsersInfo'))
+                else:
+                    render_template('add/addUser.html', msg='手机号已存在')
             except Exception as e:
                 print('发生{}异常'.format(e))
         else:
@@ -63,18 +68,16 @@ def add_user():
 
 @user.route('/searchUserInfo', methods=['GET', 'POST'])
 def searchUserInfo():
-    data = json.loads(request.form.get('data'))
-    keyword = data['search']
-    page = int(data['page'])
+    keyword = request.form.get('search')
+    page = request.args.get('page')
     if keyword:
-        users = User.query.filter(User.username.contains(keyword)).order_by(User.createtime.desc()).all()
-        pagination = User.query.order_by(User.createtime.desc()).paginate(page, per_page=6)
-        if len(users) == 0:
+        pagination = User.query.filter(User.username.contains(keyword)).order_by(User.createtime.desc()).paginate(page, per_page=6)
+        if len(pagination.items) == 0:
             return render_template('user/userInfo.html', msg='暂无数据')
         else:
-            return render_template('user/userInfo.html', users=users, pagination=pagination)
+            users = pagination.items
+            return render_template('user/userInfo.html', pagination=pagination, users=users)
     else:
-        users = User.query.order_by(User.createtime.desc()).all()
         return redirect(url_for('user.getUsersInfo'))
 
 
@@ -85,9 +88,9 @@ def editUser():
             id = request.form.get('id')
             user = User.query.get(id)
             username = request.form.get('username')
-            User.username = username
+            user.username = username
             db.session.commit()
-            return redirect(url_for('user.userInfo'))
+            return redirect(url_for('user.getUsersInfo'))
         except Exception as e:
             return jsonify({'data': e.args[0], 'msg': '用户已存在'})
     else:

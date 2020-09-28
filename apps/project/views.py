@@ -3,7 +3,7 @@ from flask import Blueprint, request, render_template, flash, redirect, url_for,
 from apps.project.models import Project
 from ext import db
 
-project = Blueprint('project', __name__, url_prefix='/app/project')
+project = Blueprint('project', __name__, url_prefix='/project')
 
 
 @project.route('/getProjectDetail', methods=['POST', 'GET'])
