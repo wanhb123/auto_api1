@@ -1,115 +1,219 @@
-import json
-import requests
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
-from sqlalchemy import and_
-from sqlalchemy.orm import session
-from apps.interface.models import Interface
-from apps.project.models import Project
+import re
+
+from flask import Blueprint, jsonify, request
+from flask_restful import Api, Resource, fields, marshal_with, reqparse
+
 from apps.user.models import User
+from apps.utils.createDate import CreateDate
 from ext import db
 
-user = Blueprint('user', __name__, url_prefix='/user')
+user_api = Blueprint('user', __name__, url_prefix='/user')
+api = Api(user_api)
 
+user_fields = {
+    'id': fields.String(default=''),
+    'username': fields.String(default=''),
+    'email': fields.String(default=''),
+    'phone': fields.String(default=''),
+    'createtime': CreateDate(dt_format='strftime', default='')
+}
 
-@user.route('/index')
-def index():
-    return render_template('add/base.html')
+resource_fields = {
+    'code': fields.Integer,
+    'msg': fields.String,
+    'data': fields.List(fields.Nested(user_fields), default=[]),
+    'total': fields.Integer
+}
+users_parser = reqparse.RequestParser()
+users_parser.add_argument('search', help='', location=['json', 'args'], type=str)
+users_parser.add_argument('page', help='当前页码不能为空', location=['json', 'args'], type=int, required=True)
+users_parser.add_argument('size', help='当前页显示用户数量不能为空', location=['json', 'args'], type=int, required=True)
 
-
-@user.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        users = User.query.filter(User.username == username).all()
-        if users:
-            for user in users:
-                if user.password == password:
-                    return redirect(url_for('user.index'))
-                else:
-                    return render_template('login.html', msg='用户名或密码有误!')
-        else:
-            return render_template('login.html', msg='用户名或密码为空!')
-    else:
-        return render_template('login.html')
-
-
-@user.route('/getUserInfo')
-def getUsersInfo():
-    page = request.args.get('page', 1, type=int)
-    pagination = User.query.order_by(User.createtime.desc()).paginate(page=page, per_page=2)
-    users = pagination.items
-    return render_template('user/userInfo.html', pagination=pagination, users=users)
-
-
-@user.route('/addUser', methods=['POST', 'GET'])
-def add_user():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        phone = request.form.get('phone')
-        if username and password:
-            try:
-                phone = User.query.filter(User.phone == phone).first()
-                if not phone:
-                    user = User(username=username, password=password, phone=phone)
-                    db.session.add(user)
-                    db.session.commit()
-                    return redirect(url_for('user.getUsersInfo'))
-                else:
-                    render_template('add/addUser.html', msg='手机号已存在')
-            except Exception as e:
-                print('发生{}异常'.format(e))
-        else:
-            return render_template('add/addUser.html', msg='信息不能为空')
-    else:
-        return render_template('add/addUser.html')
-
-
-@user.route('/searchUserInfo', methods=['GET', 'POST'])
-def searchUserInfo():
-    keyword = request.form.get('search')
-    page = request.args.get('page')
-    if keyword:
-        pagination = User.query.filter(User.username.contains(keyword)).order_by(User.createtime.desc()).paginate(page, per_page=6)
-        if len(pagination.items) == 0:
-            return render_template('user/userInfo.html', msg='暂无数据')
-        else:
-            users = pagination.items
-            return render_template('user/userInfo.html', pagination=pagination, users=users)
-    else:
-        return redirect(url_for('user.getUsersInfo'))
-
-
-@user.route('/editUser', methods=['GET', 'POST'])
-def editUser():
-    if request.method == 'POST':
+class UserApi(Resource):
+    @marshal_with(resource_fields)
+    def post(self):
         try:
-            id = request.form.get('id')
-            user = User.query.get(id)
-            username = request.form.get('username')
-            user.username = username
-            db.session.commit()
-            return redirect(url_for('user.getUsersInfo'))
-        except Exception as e:
-            return jsonify({'data': e.args[0], 'msg': '用户已存在'})
-    else:
-        id = request.args.get('id')
-        user = User.query.get(id)
-        return render_template('update/update_user.html', user=user)
-
-
-@user.route('/forgetPassword', methods=['GET', 'POST'])
-def forget():
-    if request.method == 'POST':
-        password = request.form.get('password')
-        repassword = request.form.get('repassword')
-        if password or repassword:
-            if password == repassword:
-                return redirect(url_for('user.login'))
+            args = users_parser.parse_args()
+            page = args.get('page')
+            size = args.get('size')
+            keyword = args.get('search')
+            if not keyword:
+                users = User.query.order_by(User.createtime.desc()).limit(size).offset((page - 1) * size)
+                total = User.query.count()
             else:
-                return render_template('forgetPassword.html', msg='密码输入不一致')
+                users = User.query.filter(User.username.contains(keyword)).limit(size).offset((page - 1) * size)
+                total = User.query.filter(User.username.contains(keyword)).count()
+        except Exception as e:
+            return {
+                'code': 0,
+                'msg': e,
+                'data': '',
+                'total': 0
+            }
+        return {
+            'code': 200,
+            'msg': '操作成功',
+            'data': users,
+            'total': total
+        }
+
+
+user_parser = reqparse.RequestParser()
+user_parser.add_argument('id', help='用户id不能为空', location=['json', 'args'], type=int, required=True)
+
+
+class UserDeleteApi(Resource):
+    def post(self):
+        try:
+            args = user_parser.parse_args()
+            id = args.get('id')
+            user = User.query.get(id)
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({
+                'code': 200,
+                'msg': '删除成功',
+            })
+        except Exception as e:
+            return jsonify({
+                'code': 404,
+                'msg': e,
+            })
+
+
+class UserAddApi(Resource):
+    def post(self):
+        try:
+            args = request.get_json()
+            name = args.get('data').get('name')
+            password = args.get('data').get('password')
+            repassword = args.get('data').get('repassword')
+            phone = args.get('data').get('phone')
+            email = args.get('data').get('email')
+            get_phone = User.query.filter(User.phone == phone).first()
+            ret = re.match('1[3-9]\d{9}', phone)
+            if ret:
+                if password == repassword:
+                    if not get_phone:
+                        user = User(username=name, password=password, phone=ret.group(), email=email)
+                        db.session.add(user)
+                        db.session.commit()
+                    else:
+                        return jsonify({'msg': '手机号码已存在!'})
+                else:
+                    return jsonify({'msg': '两次密码输入不一致!'})
+            else:
+                return jsonify({
+                    'code': 400,
+                    'msg': '请输入合法的手机号码！'
+                })
+        except Exception as e:
+            return jsonify({'code': 404, 'msg': '操作失败!'})
+        return jsonify({'code': 200, 'msg': '操作成功!'})
+
+class GetUserApi(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            id = data.get('id')
+            user = User.query.filter(User.id == id).first()
+            return jsonify({
+                'code': 200,
+                'msg': '操作成功!',
+                'data': {
+                    'name': user.username,
+                    'email': user.email,
+                    'phone': user.phone,
+                }})
+        except Exception as e:
+            return jsonify({
+                'code': 405,
+                'msg': e,
+            })
+
+
+edit_parser = reqparse.RequestParser()
+edit_parser.add_argument('id', help='', type=int, location='form')
+
+
+class UserEditApi(Resource):
+    def post(self):
+        try:
+            args = request.get_json()
+            id = args.get('id')
+            name = args.get('name')
+            email = args.get('email')
+            phone = args.get('phone')
+            user = User.query.filter(User.id == id).first()
+            get_phone = User.query.filter(User.phone == phone).first()
+            ret = re.match('1[3-9]\d{9}', phone)
+            if ret:
+                if not get_phone or phone == user.phone:
+                    try:
+                        user.username = name
+                        user.phone = ret.group()
+                        user.email = email
+                        db.session.commit()
+                        return jsonify({'code': 200, 'msg': '操作成功!'})
+                    except Exception as e:
+                        return jsonify({
+                            'msg': '操作失败!'
+                        })
+                else:
+                    return jsonify({
+                        'msg': '手机号码已存在!'
+                    })
+            else:
+                return jsonify({
+                    "code": 400,
+                    'msg': '请输入正确的手机号!'
+                })
+        except Exception as e:
+            return jsonify({
+                'code': 400,
+                'msg': e,
+            })
+
+class LoginApi(Resource):
+    def post(self):
+        data = request.get_json()
+        phone = data.get('phone')
+        password = data.get('password')
+        if phone and password:
+            try:
+                user = User.query.filter(User.phone == phone).first()
+                if user:
+                    if user.password == password:
+                        return jsonify({
+                            'code': 200,
+                            'msg': '操作成功!',
+                            'username': user.username,
+                        })
+                    else:
+                        return jsonify({
+                            'code': 400,
+                            'msg': '用户名或密码错误，请重新输入。'
+                        })
+                else:
+                    return jsonify({
+                        'code': 400,
+                        'msg': '用户不存在!'
+                    })
+            except Exception as e:
+                return jsonify({
+                    'code': 400,
+                    'msg': str(e),
+                })
         else:
-            return render_template('forgetPassword.html', msg='密码不能为空！')
-    else:
-        return render_template('forgetPassword.html')
+            return jsonify({
+                'code': 400,
+                'msg': '请输入正确的用户名或密码!'
+            })
+
+
+api.add_resource(UserApi, '/users')
+api.add_resource(GetUserApi, '/user')
+api.add_resource(UserDeleteApi, '/delete')
+api.add_resource(UserAddApi, '/add')
+api.add_resource(UserEditApi, '/edit')
+api.add_resource(LoginApi, '/login')

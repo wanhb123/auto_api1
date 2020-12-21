@@ -4,7 +4,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
     JSON_AS_ASCII = False
-
+    SECRET_KEY = 'ast123ast123'
 
 class Development(Config):
     ENV = 'development'

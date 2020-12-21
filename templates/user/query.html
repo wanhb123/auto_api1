@@ -60,8 +60,8 @@
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <div class="navbar-form navbar-right">
-                        <a href="{{ url_for('user.add_user') }}" class="btn btn-success">新增</a>
-                        <form class="form-group" action="{{ url_for('user.getUsersInfo') }}" method="post">
+                        <a href="{{ url_for('user.add_user') }}" class="btn btn-success">新增1</a>
+                        <form class="form-group" action="{{ url_for('user.searchUserInfo') }}" method="post">
                             <input type="text" name="search" class="form-control" placeholder="输入姓名进行搜索">
                             <span class="input-group-btn pull-right">
                                 <button type="submit" class="btn btn-default glyphicon glyphicon-search"></button>
@@ -110,7 +110,7 @@
                             <ul class="pagination pagination-sm">
                                 <li>
                                     {% if pagination.has_prev %}
-                                        <a href="{{ url_for('user.getUsersInfo') }}?page={{ pagination.prev_num }}"
+                                        <a href="{{ url_for('user.searchUserInfo') }}?page={{ pagination.prev_num }}"
                                            aria-label="Previous">
                                             <span aria-hidden="true">上一页</span>
                                         </a>
@@ -121,13 +121,13 @@
                                 </li>
                                 {% for page_num in range(1, pagination.pages + 1) %}
                                     <li {% if pagination.page == page_num %} class="active" {% endif %}><a
-                                            href="{{ url_for('user.getUsersInfo') }}?page={{ page_num }}"
+                                            href="{{ url_for('user.searchUserInfo') }}?page={{ page_num }}"
                                             class="page">{{ page_num }}</a>
                                     </li>
                                 {% endfor %}
                                 <li>
                                     {% if pagination.has_next %}
-                                        <a href="{{ url_for('user.getUsersInfo') }}?page={{ pagination.next_num }}"
+                                        <a href="{{ url_for('user.searchUserInfo') }}?page={{ pagination.next_num }}"
                                            aria-label="Next">
                                             <span aria-hidden="true">下一页</span>
                                         </a>
